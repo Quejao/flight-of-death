@@ -10,6 +10,7 @@ class Player extends Phaser.Sprite {
         this.body.isCircle = true
         this.nextFire = 0
         this.angle = -90
+        this.score = 0
         this.body.collideWorldBounds = true;
         
         this.cursors = {
