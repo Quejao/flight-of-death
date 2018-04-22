@@ -1,8 +1,9 @@
 
 class Player extends Phaser.Sprite {
-    constructor(game, x, y, img, bullets, keys) {
+    constructor(game, x, y, img, tint, bullets, keys) {
         super(game, x, y, img)
-        this.scale.setTo(config.SCALE, config.SCALE)
+        this.scale.setTo(config.PLAYER_SCALE, config.PLAYER_SCALE)
+        this.tint = tint
         this.health = config.PLAYER_HEALTH
         this.anchor.setTo(0.5, 0.5)
         game.physics.arcade.enable(this)
