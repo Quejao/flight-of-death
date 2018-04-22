@@ -173,12 +173,12 @@ function createEnemy() {
     }
 }
 
-function hitEnemy(enemy1, bullet, p) {
+function hitEnemy(enemy1, bullet) {
     if (enemy1.alive && enemy1.y > 0) {
         enemy1.damage(1)
         bullet.kill()
         if (!enemy1.alive) {
-            p.score += 10
+            player1.score += 10
             enemiesToBoss += 1
             if(enemiesToBoss == config.ENEMY_QNT){
                 game.time.events.remove(gameEvents.enemy1)
@@ -191,12 +191,49 @@ function hitEnemy(enemy1, bullet, p) {
     }
 }
 
-function hitBoss(boss, bullet, p) {
+function hitBoss(boss, bullet) {
     if (boss.alive && boss.y > 0) {
         boss.damage(1)
         bullet.kill()
         if (!boss.alive) {
-            p.score += 100
+            player1.score += 100
+            enemiesToBoss = 0
+            config.ENEMY_QNT += 5
+            config.ENEMY_HEALTH += 1
+            config.ENEMY_VELOCITY += 60
+            config.BOSS_SPAWN = 0
+            level++
+            config.ENEMY_SPAWN_RATE *= 8/10
+            gameEvents.enemy1 = game.time.events.loop(config.ENEMY_SPAWN_RATE, createEnemy, this)
+            updateHud()
+        }
+    }
+}
+
+function hitEnemy2(enemy1, bullet) {
+    if (enemy1.alive && enemy1.y > 0) {
+        enemy1.damage(1)
+        bullet.kill()
+        if (!enemy1.alive) {
+            player2.score += 10
+            enemiesToBoss += 1
+            if(enemiesToBoss == config.ENEMY_QNT){
+                game.time.events.remove(gameEvents.enemy1)
+                boss.reset(game.width / 2, -200)
+                boss.health = config.ENEMY_HEALTH * 5
+                config.BOSS_SPAWN = 1
+            }
+            updateHud()
+        }
+    }
+}
+
+function hitBoss2(boss, bullet) {
+    if (boss.alive && boss.y > 0) {
+        boss.damage(1)
+        bullet.kill()
+        if (!boss.alive) {
+            player2.score += 100
             enemiesToBoss = 0
             config.ENEMY_QNT += 5
             config.ENEMY_HEALTH += 1
@@ -245,8 +282,8 @@ function update() {
     game.physics.arcade.collide(player1, boss, hitPlayerBoss);
 
     
-    game.physics.arcade.overlap(enemies1, player2.bullets, hitEnemy);
-    game.physics.arcade.overlap(boss, player2.bullets, hitBoss);
+    game.physics.arcade.overlap(enemies1, player2.bullets, hitEnemy2);
+    game.physics.arcade.overlap(boss, player2.bullets, hitBoss2);
     game.physics.arcade.collide(player2, enemies1, hitPlayer);
     game.physics.arcade.collide(player2, boss, hitPlayerBoss);
 }
