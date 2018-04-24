@@ -19,11 +19,11 @@ config.RES_Y = 1200
 config.SCALE = 1.5
 
 config.PLAYER_VELOCITY = 500
-config.PLAYER_HEALTH = 5
+config.PLAYER_HEALTH = 10
 config.PLAYER_SCALE = 3
 
 config.ENEMY_HEALTH = 1
-config.ENEMY_QNT = 10
+config.ENEMY_QNT = 1
 config.ENEMY_VELOCITY = 100
 config.ENEMY_SPAWN_RATE = Phaser.Timer.SECOND * 4
 
@@ -38,6 +38,10 @@ config.BULLET_FIRE_RATE = 250
 config.ENEMY_BULLET_VELOCITY = 200
 config.ENEMY_BULLET_FIRE_RATE = 50
 
+
+config.BOSS_BULLET_VELOCITY = 400
+config.BOSS_BULLET_FIRE_RATE = 360
+
 var game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
     'game-container',
     {
@@ -51,16 +55,19 @@ function preload() {
     game.load.image('space', 'assets/space.png')
     game.load.image('plane1', 'assets/ship.png')
     game.load.image('shot', 'assets/shot.png')
-    game.load.image('enemy1', 'assets/airplane2.png')
+    game.load.image('bossShot', 'assets/bossShot.png')
+    game.load.image('enemy1', 'assets/asteroid.png')
+    game.load.image('enemy2', 'assets/airplane2.png')
 }
 
-function createBullets() {
+function createBullets(tint) {
     var bullets = game.add.group()
     bullets.enableBody = true
     bullets.physicsBodyType = Phaser.Physics.ARCADE
     bullets.createMultiple(config.BULLET_QNT, 'shot')
     bullets.setAll('anchor.x', 0.5)
     bullets.setAll('anchor.y', 0.5)
+    bullets.setAll('tint', tint)
     return bullets
 }
 
@@ -68,8 +75,8 @@ function createHealthText(x, y, text) {
     var style = { font: 'bold 20px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
-    text.stroke = '#000000';
-    text.strokeThickness = 5;
+    text.stroke = '#000000'
+    text.strokeThickness = 5
     text.anchor.setTo(0.5, 0.5)
     return text
 }
@@ -78,8 +85,8 @@ function createScoreText(x, y, text) {
     var style = { font: 'bold 20px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
-    text.stroke = '#000000';
-    text.strokeThickness = 5;
+    text.stroke = '#000000'
+    text.strokeThickness = 5
     text.anchor.setTo(0.5, 0.5)
     return text
 }
@@ -88,8 +95,8 @@ function createLevelText(x, y, text) {
     var style = { font: 'bold 30px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
-    text.stroke = '#000000';
-    text.strokeThickness = 5;
+    text.stroke = '#000000'
+    text.strokeThickness = 5
     text.anchor.setTo(0.5, 0.5)
     return text
 }
@@ -98,16 +105,16 @@ function createGameOverText(x, y, text) {
     var style = { font: 'bold 100px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
-    text.stroke = '#000000';
-    text.strokeThickness = 5;
+    text.stroke = '#000000'
+    text.strokeThickness = 5
     text.anchor.setTo(0.5, 0.5)
-    text.visible = false;
+    text.visible = false
     return text
 }
 
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE)
-    game.world.setBounds(0, 0, config.RES_X, config.RES_Y);
+    game.world.setBounds(0, 0, config.RES_X, config.RES_Y)
 
     space = game.add.sprite(0, 0, 'space')
     space2 = game.add.sprite(0, config.RES_Y, 'space')
@@ -116,9 +123,9 @@ function create() {
     space.anchor.setTo(0.5, 0.5)
     space.scale.setTo(2, 2)
 
-    player1 = new Player(game, (game.width / 2) - 100, game.height -100, 'plane1', 0xff0000,createBullets(),
+    player1 = new Player(game, (game.width / 2) - 100, game.height -100, 'plane1', 0x008000, createBullets(0x008000),
         {
-            left: Phaser.Keyboard.A,
+            left: Phaser.Keyboard.A, 
             right: Phaser.Keyboard.D,
             up: Phaser.Keyboard.W,
             down: Phaser.Keyboard.S,
@@ -126,7 +133,7 @@ function create() {
         }
     )
 
-    player2 = new Player(game, (game.width / 2) + 100, game.height -100, 'plane1', 0x0000ff, createBullets(),
+    player2 = new Player(game, (game.width / 2) + 100, game.height -100, 'plane1', 0xff0000, createBullets(0xff0000),
         {
             left: Phaser.Keyboard.LEFT,
             right: Phaser.Keyboard.RIGHT,
@@ -150,7 +157,7 @@ function create() {
 
     gameEvents.enemy1 = game.time.events.loop(config.ENEMY_SPAWN_RATE, createEnemy, this)
 
-    boss = new Boss(game, game.width / 2, -50, 'enemy1')
+    boss = new Boss(game, game.width / 2, -50, 'enemy2', 'bossShot')
     game.add.existing(boss)
 
     hud = {
@@ -167,7 +174,7 @@ function create() {
 function createEnemy() {
     var enemy = enemies1.getFirstExists(false)
     if (enemy) {
-        enemy.reset(game.rnd.integerInRange(0, game.width), -10)
+        enemy.reset(game.rnd.integerInRange(48, game.width-48), -10)
         enemy.health = config.ENEMY_HEALTH
         enemy.angle = 90
     }
@@ -184,6 +191,7 @@ function hitEnemy(enemy1, bullet) {
                 game.time.events.remove(gameEvents.enemy1)
                 boss.reset(game.width / 2, -200)
                 boss.health = config.ENEMY_HEALTH * 5
+                boss.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
                 config.BOSS_SPAWN = 1
             }
             updateHud()
@@ -229,7 +237,7 @@ function hitEnemy2(enemy1, bullet) {
 }
 
 function hitBoss2(boss, bullet) {
-    if (boss.alive && boss.y > 0) {
+    if (boss.alive) {
         boss.damage(1)
         bullet.kill()
         if (!boss.alive) {
@@ -238,6 +246,7 @@ function hitBoss2(boss, bullet) {
             config.ENEMY_QNT += 5
             config.ENEMY_HEALTH += 1
             config.ENEMY_VELOCITY += 60
+            config.BOSS_BULLET_FIRE_RATE += 20
             config.BOSS_SPAWN = 0
             level++
             config.ENEMY_SPAWN_RATE *= 8/10
@@ -257,7 +266,15 @@ function hitPlayer(player, damager) {
 
 function hitPlayerBoss(player, boss) {
     if (player.alive) {
-        player.damage(1)
+        player.damage(2)
+        updateHud()
+    }
+}
+
+function hitPlayerBossBullet(player, bossBullet) {
+    if (player.alive) {
+        player.damage(2)
+        bossBullet.kill()
         updateHud()
     }
 }
@@ -271,21 +288,26 @@ function update() {
     }
 
     if (boss.y < 199 && config.BOSS_SPAWN == 1){
-        console.log("!")
         boss.y += 10
     }
     /* enemy1.y += 3 */
 
-    game.physics.arcade.overlap(enemies1, player1.bullets, hitEnemy);
-    game.physics.arcade.overlap(boss, player1.bullets, hitBoss);
-    game.physics.arcade.collide(player1, enemies1, hitPlayer);
-    game.physics.arcade.collide(player1, boss, hitPlayerBoss);
+    game.physics.arcade.overlap(enemies1, player1.bullets, hitEnemy)
+    game.physics.arcade.overlap(boss, player1.bullets, hitBoss)
+    game.physics.arcade.collide(player1, enemies1, hitPlayer)
+    game.physics.arcade.collide(player1, boss, hitPlayerBoss)
+    game.physics.arcade.collide(player1, boss.weapon.bullets, hitPlayerBossBullet)
 
     
-    game.physics.arcade.overlap(enemies1, player2.bullets, hitEnemy2);
-    game.physics.arcade.overlap(boss, player2.bullets, hitBoss2);
-    game.physics.arcade.collide(player2, enemies1, hitPlayer);
-    game.physics.arcade.collide(player2, boss, hitPlayerBoss);
+    game.physics.arcade.overlap(enemies1, player2.bullets, hitEnemy2)
+    game.physics.arcade.overlap(boss, player2.bullets, hitBoss2)
+    game.physics.arcade.collide(player2, enemies1, hitPlayer)
+    game.physics.arcade.collide(player2, boss, hitPlayerBoss)
+    game.physics.arcade.collide(player2, boss.weapon.bullets, hitPlayerBossBullet)
+
+    updateBullets(player1.bullets)
+    updateBullets(player2.bullets)
+    updateEnemy(enemies1)
 }
 
 
@@ -294,10 +316,34 @@ function updateHud() {
     hud.score1.text = `SCORE: ${player1.score}`
     hud.text2.text = `PLAYER 2: ${player2.health}`
     hud.score2.text = `SCORE: ${player2.score}`
-    if (!player1.alive) {
-        hud.gameOver.visible = true;
+    if (!player1.alive && !player2.alive) {
+        hud.gameOver.visible = true
     }
     hud.level.text = `LEVEL: ${level}`
+}
+
+function updateBullets(bullets) {
+    bullets.forEach(function(bullet) {
+	killOutOfScreen(bullet)
+    })
+}
+
+function updateEnemy(bullets) {
+    bullets.forEach(function(bullet) {
+	killEnemyOutOfScreen(bullet)
+    })
+}
+
+function killOutOfScreen(sprite) {
+    if (sprite.x < 0 || sprite.x > game.width || sprite.y < 0 || sprite.y > game.height) {
+        sprite.kill()
+    }    
+}
+
+function killEnemyOutOfScreen(sprite) {
+    if (sprite.x < 0 || sprite.x > game.width || sprite.y > game.height) {
+        sprite.kill()
+    }    
 }
 
 function render() {

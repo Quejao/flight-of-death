@@ -12,7 +12,7 @@ class Player extends Phaser.Sprite {
         this.nextFire = 0
         this.angle = -90
         this.score = 0
-        this.body.collideWorldBounds = true;
+        this.body.collideWorldBounds = true 
         
         this.cursors = {
             left: game.input.keyboard.addKey(keys.left),
@@ -54,7 +54,7 @@ class Player extends Phaser.Sprite {
 
     fireBullet() {
         if (!this.alive)
-            return;
+            return 
     
         if (this.cursors.fire.isDown) {
             if (this.game.time.time > this.nextFire) {
