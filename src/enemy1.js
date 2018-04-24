@@ -14,8 +14,6 @@ class Enemy1 extends Phaser.Sprite {
         
         this.nextFire = 0
 
-        this.body.isCircle = true
-
     }
 
     update() {
