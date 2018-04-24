@@ -22,10 +22,18 @@ config.PLAYER_VELOCITY = 500
 config.PLAYER_HEALTH = 10
 config.PLAYER_SCALE = 3
 
-config.ENEMY_HEALTH = 1
-config.ENEMY_QNT = 1
-config.ENEMY_VELOCITY = 100
-config.ENEMY_SPAWN_RATE = Phaser.Timer.SECOND * 4
+config.BOSS_HEALTH = 5
+config.BOSS_VELOCITY = 100
+
+config.ENEMY1_HEALTH = 1
+config.ENEMY1_QNT = 1
+config.ENEMY1_VELOCITY = 100
+config.ENEMY1_SPAWN_RATE = Phaser.Timer.SECOND * 4
+
+config.ENEMY2_HEALTH = 1
+config.ENEMY2_QNT = 1
+config.ENEMY2_VELOCITY = 100
+config.ENEMY2_SPAWN_RATE = Phaser.Timer.SECOND * 4
 
 config.BOSS_SPAWN = 0
 
@@ -35,8 +43,8 @@ config.BULLET_LIFE_SPAN = 1000
 config.BULLET_VELOCITY = 1000
 config.BULLET_FIRE_RATE = 250
 
-config.ENEMY_BULLET_VELOCITY = 200
-config.ENEMY_BULLET_FIRE_RATE = 50
+config.ENEMY1_BULLET_VELOCITY = 200
+config.ENEMY1_BULLET_FIRE_RATE = 50
 
 
 config.BOSS_BULLET_VELOCITY = 400
@@ -151,11 +159,11 @@ function create() {
     enemies1.enableBody = true
     enemies1.physicsBodyType = Phaser.Physics.ARCADE
     enemies1.classType = Enemy1
-    enemies1.createMultiple(config.ENEMY_QNT, 'enemy1')
+    enemies1.createMultiple(config.ENEMY1_QNT, 'enemy1')
     enemies1.setAll('anchor.x', 0.5)
     enemies1.setAll('anchor.y', 0.5)
 
-    gameEvents.enemy1 = game.time.events.loop(config.ENEMY_SPAWN_RATE, createEnemy, this)
+    gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
 
     boss = new Boss(game, game.width / 2, -50, 'enemy2', 'bossShot')
     game.add.existing(boss)
@@ -175,7 +183,7 @@ function createEnemy() {
     var enemy = enemies1.getFirstExists(false)
     if (enemy) {
         enemy.reset(game.rnd.integerInRange(48, game.width-48), -10)
-        enemy.health = config.ENEMY_HEALTH
+        enemy.health = config.ENEMY1_HEALTH
         enemy.angle = 90
     }
 }
@@ -187,10 +195,10 @@ function hitEnemy(enemy1, bullet) {
         if (!enemy1.alive) {
             player1.score += 10
             enemiesToBoss += 1
-            if(enemiesToBoss == config.ENEMY_QNT){
+            if(enemiesToBoss == config.ENEMY1_QNT){
                 game.time.events.remove(gameEvents.enemy1)
                 boss.reset(game.width / 2, -200)
-                boss.health = config.ENEMY_HEALTH * 5
+                boss.health = config.BOSS_HEALTH
                 boss.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
                 config.BOSS_SPAWN = 1
             }
@@ -206,13 +214,13 @@ function hitBoss(boss, bullet) {
         if (!boss.alive) {
             player1.score += 100
             enemiesToBoss = 0
-            config.ENEMY_QNT += 5
-            config.ENEMY_HEALTH += 1
-            config.ENEMY_VELOCITY += 60
+            config.ENEMY1_QNT += 5
+            config.ENEMY1_HEALTH += 1
+            config.ENEMY1_VELOCITY += 60
             config.BOSS_SPAWN = 0
             level++
-            config.ENEMY_SPAWN_RATE *= 8/10
-            gameEvents.enemy1 = game.time.events.loop(config.ENEMY_SPAWN_RATE, createEnemy, this)
+            config.ENEMY1_SPAWN_RATE *= 8/10
+            gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
             updateHud()
         }
     }
@@ -225,10 +233,10 @@ function hitEnemy2(enemy1, bullet) {
         if (!enemy1.alive) {
             player2.score += 10
             enemiesToBoss += 1
-            if(enemiesToBoss == config.ENEMY_QNT){
+            if(enemiesToBoss == config.ENEMY1_QNT){
                 game.time.events.remove(gameEvents.enemy1)
                 boss.reset(game.width / 2, -200)
-                boss.health = config.ENEMY_HEALTH * 5
+                boss.health = config.BOSS_HEALTH
                 config.BOSS_SPAWN = 1
             }
             updateHud()
@@ -243,14 +251,17 @@ function hitBoss2(boss, bullet) {
         if (!boss.alive) {
             player2.score += 100
             enemiesToBoss = 0
-            config.ENEMY_QNT += 5
-            config.ENEMY_HEALTH += 1
-            config.ENEMY_VELOCITY += 60
+            config.ENEMY1_QNT += 5
+            config.ENEMY1_HEALTH += 1
+            config.ENEMY1_VELOCITY += 60
+
+            config.BOSS_HEALTH += 5
+
             config.BOSS_BULLET_FIRE_RATE += 20
             config.BOSS_SPAWN = 0
             level++
-            config.ENEMY_SPAWN_RATE *= 8/10
-            gameEvents.enemy1 = game.time.events.loop(config.ENEMY_SPAWN_RATE, createEnemy, this)
+            config.ENEMY1_SPAWN_RATE *= 8/10
+            gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
             updateHud()
         }
     }
