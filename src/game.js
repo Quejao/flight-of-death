@@ -12,6 +12,8 @@ var enemiesToBoss = 0
 var hud
 var level = 1
 var gameEvents = {}
+var itens
+
 
 //Configurações do jogo
 const config = {}
@@ -37,7 +39,7 @@ config.BOSS_BULLET_VELOCITY = 400
 config.BOSS_BULLET_FIRE_RATE = 360
 
 
-config.ENEMY_QNT = 10
+config.ENEMY_QNT = 1
 
 config.ENEMY1_HEALTH = 0
 config.ENEMY1_VELOCITY = 100
@@ -212,12 +214,17 @@ function createEnemy2() {
     }
 }
 
+function createItem(x, y) {
+    var item = itens.getFirstExists(false)
+}
+
 function player1HitEnemy1(enemy1, bullet) {
     if (enemy1.alive && enemy1.y > 0) {
         enemy1.damage(1)
         bullet.kill()
         if (!enemy1.alive) {
             player1.score += 5
+            createItem(enemy1.x, enemy1.y)
             updateHud()
         }
     }
@@ -360,7 +367,7 @@ function update() {
         space2.y = config.RES_Y
     }
 
-    if (boss.y < 199 && config.BOSS_SPAWN == 1) {
+    if (boss.y < 149 && config.BOSS_SPAWN == 1) {
         boss.y += 10
     }
 
@@ -371,7 +378,7 @@ function update() {
 
     game.physics.arcade.collide(player1, enemies1, enemyHitPlayer)
     game.physics.arcade.collide(player1, enemies2, enemyHitPlayer)
-    enemies2.forEach(function(obj){
+    enemies2.forEach(function (obj) {
         game.physics.arcade.collide(player1, obj.weapon.bullets, enemyBulletHitPlayer)
     })
     game.physics.arcade.collide(player1, boss, bossHitPlayer)
@@ -385,7 +392,7 @@ function update() {
 
     game.physics.arcade.collide(player2, enemies1, enemyHitPlayer)
     game.physics.arcade.collide(player2, enemies2, enemyHitPlayer)
-    enemies2.forEach(function(obj){
+    enemies2.forEach(function (obj) {
         game.physics.arcade.collide(player2, obj.weapon.bullets, enemyBulletHitPlayer)
     })
     game.physics.arcade.collide(player2, boss, bossHitPlayer)
@@ -399,8 +406,8 @@ function update() {
 
 
 function updateHud() {
-    if(player1.health < 0) player1.health = 0
-    if(player2.health < 0) player2.health = 0
+    if (player1.health < 0) player1.health = 0
+    if (player2.health < 0) player2.health = 0
     hud.text1.text = `PLAYER 1: ${player1.health}`
     hud.score1.text = `SCORE: ${player1.score}`
     hud.text2.text = `PLAYER 2: ${player2.health}`
@@ -438,7 +445,7 @@ function killEnemyOutOfScreen(sprite) {
 function render() {
     /* game.debug.body(player1)
     game.debug.body(player2) */
-    enemies2.forEach(function(obj){
+    /* enemies2.forEach(function(obj){
         game.debug.body(obj)
-    })
+    }) */
 }

@@ -20,7 +20,7 @@ class Enemy2 extends Phaser.Sprite {
         this.weapon.fireAngle = 90
         this.weapon.bulletSpeed = config.ENEMY2_BULLET_VELOCITY
         this.weapon.fireRate = 1500;
-        this.weapon.trackSprite(this, 14, 0)
+        this.weapon.trackSprite(this, 0, 14)
 
     }
 
