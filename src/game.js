@@ -12,18 +12,29 @@ var hud
 var level = 1
 var gameEvents = {}
 
+//Configurações do jogo
 const config = {}
 config.RES_X = 1200 // resolucao HD
 config.RES_Y = 1200
-
 config.SCALE = 1.5
 
+//Configurações dos players
 config.PLAYER_VELOCITY = 500
 config.PLAYER_HEALTH = 10
 config.PLAYER_SCALE = 3
 
+config.BULLET_FIRE_RATE = 20
+config.BULLET_QNT = 30
+config.BULLET_LIFE_SPAN = 1000
+config.BULLET_VELOCITY = 1000
+config.BULLET_FIRE_RATE = 250
+
+//Configurações dos inimigos
 config.BOSS_HEALTH = 5
 config.BOSS_VELOCITY = 100
+config.BOSS_SPAWN = 0
+config.BOSS_BULLET_VELOCITY = 400
+config.BOSS_BULLET_FIRE_RATE = 360
 
 config.ENEMY1_HEALTH = 1
 config.ENEMY1_QNT = 1
@@ -35,20 +46,8 @@ config.ENEMY2_QNT = 1
 config.ENEMY2_VELOCITY = 100
 config.ENEMY2_SPAWN_RATE = Phaser.Timer.SECOND * 4
 
-config.BOSS_SPAWN = 0
-
-config.BULLET_FIRE_RATE = 20
-config.BULLET_QNT = 30
-config.BULLET_LIFE_SPAN = 1000
-config.BULLET_VELOCITY = 1000
-config.BULLET_FIRE_RATE = 250
-
 config.ENEMY1_BULLET_VELOCITY = 200
 config.ENEMY1_BULLET_FIRE_RATE = 50
-
-
-config.BOSS_BULLET_VELOCITY = 400
-config.BOSS_BULLET_FIRE_RATE = 360
 
 var game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
     'game-container',
