@@ -12,7 +12,9 @@ var enemiesToBoss = 0
 var hud
 var level = 1
 var gameEvents = {}
-var itens
+var itens1 = {}
+var itens2 = {}
+var itens3 = {}
 
 
 //Configurações do jogo
@@ -20,6 +22,8 @@ const config = {}
 config.RES_X = 1200 // resolucao HD
 config.RES_Y = 1200
 config.SCALE = 1.5
+
+config.INVECIBILITY_TIME = 5
 
 //Configurações dos players
 config.PLAYER_VELOCITY = 500
@@ -29,7 +33,7 @@ config.PLAYER_SCALE = 3
 config.BULLET_QNT = 100
 config.BULLET_LIFE_SPAN = 1000
 config.BULLET_VELOCITY = 1500
-config.BULLET_FIRE_RATE = 500
+config.BULLET_FIRE_RATE = 1000
 
 //Configurações dos inimigos
 config.BOSS_HEALTH = 5
@@ -50,7 +54,7 @@ config.ENEMY2_VELOCITY = 100
 config.ENEMY2_SPAWN_RATE = Phaser.Timer.SECOND * 4
 
 config.ENEMY2_BULLET_VELOCITY = 200
-config.ENEMY2_BULLET_FIRE_RATE = 50
+config.ENEMY2_BULLET_FIRE_RATE = 2000
 
 var game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
     'game-container',
@@ -64,11 +68,17 @@ var game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
 function preload() {
     game.load.image('space', 'assets/space.png')
     game.load.image('plane1', 'assets/ship.png')
+
     game.load.image('shot', 'assets/shot.png')
     game.load.image('bossShot', 'assets/bossShot.png')
     game.load.image('nuke', 'assets/nuke.png')
+
     game.load.image('enemy1', 'assets/asteroid.png')
     game.load.image('enemy2', 'assets/airplane2.png')
+
+    game.load.image('item1', 'assets/health.png')
+    game.load.image('item2', 'assets/fireRate.png')
+    game.load.image('item3', 'assets/invencibility.png')
 }
 
 function createBullets(tint) {
@@ -82,8 +92,21 @@ function createBullets(tint) {
     return bullets
 }
 
+function createItems(img) {
+    var itens = game.add.group()
+    itens.enableBody = true
+    itens.physicsBodyType = Phaser.Physics.ARCADE
+    itens.createMultiple(10, img)
+    itens.setAll('anchor.x', 0.5)
+    itens.setAll('anchor.y', 0.5)
+    itens.setAll('scale.x', 0.4)
+    itens.setAll('scale.y', 0.4)
+
+    return itens
+}
+
 function createHealthText(x, y, text) {
-    var style = { font: 'bold 20px Arial', fill: 'white' }
+    var style = { font: 'bold 25px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     text.stroke = '#000000'
@@ -93,7 +116,7 @@ function createHealthText(x, y, text) {
 }
 
 function createScoreText(x, y, text) {
-    var style = { font: 'bold 20px Arial', fill: 'white' }
+    var style = { font: 'bold 25px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     text.stroke = '#000000'
@@ -103,7 +126,7 @@ function createScoreText(x, y, text) {
 }
 
 function createLevelText(x, y, text) {
-    var style = { font: 'bold 30px Arial', fill: 'white' }
+    var style = { font: 'bold 35px Arial', fill: 'white' }
     var text = game.add.text(x, y, text, style)
     //text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     text.stroke = '#000000'
@@ -177,6 +200,12 @@ function create() {
 
     gameEvents.enemy2 = game.time.events.loop(config.ENEMY2_SPAWN_RATE, createEnemy2, this)
 
+    itens1 = createItems('item1')
+
+    itens2 = createItems('item2')
+
+    itens3 = createItems('item3')
+
     boss = new Boss(game, game.width / 2, -50, 'enemy2', 'bossShot')
     game.add.existing(boss)
 
@@ -214,8 +243,28 @@ function createEnemy2() {
     }
 }
 
-function createItem(x, y) {
-    var item = itens.getFirstExists(false)
+function spawnItem(x, y) {
+    var aux = game.rnd.integerInRange(1, 3)
+
+    if (aux == 1) {
+        var item = itens1.getFirstExists(false)
+        if (item) {
+            item.reset(x, y)
+            item.body.velocity.y = 200
+        }
+    } else if (aux == 2) {
+        var item = itens2.getFirstExists(false)
+        if (item) {
+            item.reset(x, y)
+            item.body.velocity.y = 200
+        }
+    } else if (aux == 3) {
+        var item = itens3.getFirstExists(false)
+        if (item) {
+            item.reset(x, y)
+            item.body.velocity.y = 200
+        }
+    }
 }
 
 function player1HitEnemy1(enemy1, bullet) {
@@ -223,8 +272,8 @@ function player1HitEnemy1(enemy1, bullet) {
         enemy1.damage(1)
         bullet.kill()
         if (!enemy1.alive) {
-            player1.score += 5
-            createItem(enemy1.x, enemy1.y)
+            player1.score += 5 * level
+            spawnItem(enemy1.x, enemy1.y)
             updateHud()
         }
     }
@@ -235,7 +284,7 @@ function player1HitEnemy2(enemy1, bullet) {
         enemy1.damage(1)
         bullet.kill()
         if (!enemy1.alive) {
-            player1.score += 10
+            player1.score += 10 * level
             enemiesToBoss += 1
             if (enemiesToBoss == config.ENEMY_QNT) {
                 game.time.events.remove(gameEvents.enemy2)
@@ -254,7 +303,7 @@ function player1HitBoss(boss, bullet) {
         boss.damage(1)
         bullet.kill()
         if (!boss.alive) {
-            player1.score += 100
+            player1.score += 100 * level
             enemiesToBoss = 0
             config.ENEMY_QNT += 5
             config.ENEMY1_HEALTH += 1
@@ -278,7 +327,8 @@ function player2HitEnemy1(enemy1, bullet) {
         enemy1.damage(1)
         bullet.kill()
         if (!enemy1.alive) {
-            player2.score += 5
+            player2.score += 5 * level
+            spawnItem(enemy1.x, enemy1.y)
             updateHud()
         }
     }
@@ -289,7 +339,7 @@ function player2HitEnemy2(enemy2, bullet) {
         enemy2.damage(1)
         bullet.kill()
         if (!enemy2.alive) {
-            player2.score += 10
+            player2.score += 10 * level
             enemiesToBoss += 1
             if (enemiesToBoss == config.ENEMY_QNT) {
                 game.time.events.remove(gameEvents.enemy2)
@@ -307,7 +357,7 @@ function player2HitBoss(boss, bullet) {
         boss.damage(1)
         bullet.kill()
         if (!boss.alive) {
-            player2.score += 100
+            player2.score += 100 * level
             enemiesToBoss = 0
             config.ENEMY_QNT += 5
             config.ENEMY1_HEALTH += 1
@@ -346,7 +396,7 @@ function enemyHitPlayer(player, damager) {
 
 function bossHitPlayer(player, boss) {
     if (player.alive) {
-        player.damage(2)
+        player.damage(2 * level)
         updateHud()
     }
 }
@@ -357,6 +407,32 @@ function bossBulletHitPlayer(player, bossBullet) {
         bossBullet.kill()
         updateHud()
     }
+}
+
+function pickHealthPack(player, healthPack) {
+    player.health += 1
+    healthPack.kill()
+    updateHud()
+}
+
+function pickFireRateUpgrade(player, fireRateUpgrade) {
+    if (player.fireRate > 100) {
+        player.fireRate -= 50
+    } else{
+        player.score += 10
+    }
+    fireRateUpgrade.kill()
+}
+
+function pickInvencibility(player, invencibilityDrop){
+    invencibilityDrop.kill()
+    player.invencible = 1
+    gameEvents.invencibility = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player)
+
+}
+
+function removeInvencibility(player){
+    player.invencible = 0
 }
 
 function update() {
@@ -384,6 +460,10 @@ function update() {
     game.physics.arcade.collide(player1, boss, bossHitPlayer)
     game.physics.arcade.collide(player1, boss.weapon.bullets, bossBulletHitPlayer)
 
+    game.physics.arcade.overlap(player1, itens1, pickHealthPack)
+    game.physics.arcade.overlap(player1, itens2, pickFireRateUpgrade)
+
+
 
 
     game.physics.arcade.overlap(enemies1, player2.bullets, player2HitEnemy1)
@@ -397,6 +477,11 @@ function update() {
     })
     game.physics.arcade.collide(player2, boss, bossHitPlayer)
     game.physics.arcade.collide(player2, boss.weapon.bullets, bossBulletHitPlayer)
+
+    game.physics.arcade.overlap(player2, itens1, pickHealthPack)
+    game.physics.arcade.overlap(player2, itens2, pickFireRateUpgrade)
+
+
 
     updateBullets(player1.bullets)
     updateBullets(player2.bullets)

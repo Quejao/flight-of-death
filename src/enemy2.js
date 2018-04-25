@@ -12,14 +12,11 @@ class Enemy2 extends Phaser.Sprite {
         this.health = config.ENEMY2_HEALTH
         this.body.setSize(60,40,-10,10)
         
-        this.nextFire = 0
-
-        
         this.weapon = game.add.weapon(10, 'nuke')
         this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
         this.weapon.fireAngle = 90
         this.weapon.bulletSpeed = config.ENEMY2_BULLET_VELOCITY
-        this.weapon.fireRate = 1500;
+        this.weapon.fireRate = config.ENEMY2_BULLET_FIRE_RATE
         this.weapon.trackSprite(this, 0, 14)
 
     }

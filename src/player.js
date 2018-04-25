@@ -13,6 +13,9 @@ class Player extends Phaser.Sprite {
         this.angle = -90
         this.score = 0
         this.body.collideWorldBounds = true 
+        this.invencible = 0
+
+        this.fireRate = config.BULLET_FIRE_RATE
         
         this.cursors = {
             left: game.input.keyboard.addKey(keys.left),
@@ -70,7 +73,7 @@ class Player extends Phaser.Sprite {
                         bullet.rotation, config.BULLET_VELOCITY, bullet.body.velocity
                     )
     
-                    this.nextFire = this.game.time.time + config.BULLET_FIRE_RATE
+                    this.nextFire = this.game.time.time + this.fireRate
                 }
             }
         }
