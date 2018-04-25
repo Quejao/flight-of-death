@@ -5,7 +5,6 @@ class Enemy2 extends Phaser.Sprite {
         this.y = 0 - this.height
         this.SPEED_X = config.ENEMY2_VELOCITY
         this.SPEED_Y = config.ENEMY2_VELOCITY
-        this.nextFire = 0
         this.anchor.setTo(0.5, 0.5)
         game.physics.arcade.enable(this)
         this.body.maxVelocity.set(this.SPEED_X)

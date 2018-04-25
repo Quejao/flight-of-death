@@ -5,7 +5,6 @@ class Boss extends Phaser.Sprite {
         this.y = -200
         this.SPEED_X = config.BOSS_VELOCITY
         this.SPEED_Y = config.BOSS_VELOCITY
-        this.nextFire = 0
         this.anchor.setTo(0.5, 0.5)
         game.physics.arcade.enable(this)
         this.body.maxVelocity.set(this.SPEED_X)

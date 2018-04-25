@@ -47,11 +47,15 @@ config.ENEMY_QNT = 1
 
 config.ENEMY1_HEALTH = 0
 config.ENEMY1_VELOCITY = 100
-config.ENEMY1_SPAWN_RATE = Phaser.Timer.SECOND * 4
+config.ENEMY1_SPAWN_RATE = Phaser.Timer.SECOND * 6
 
 config.ENEMY2_HEALTH = 1
 config.ENEMY2_VELOCITY = 100
 config.ENEMY2_SPAWN_RATE = Phaser.Timer.SECOND * 4
+
+config.ENEMY3_HEALTH = 1
+config.ENEMY3_VELOCITY = 100
+config.ENEMY3_SPAWN_RATE = Phaser.Timer.SECOND * 4
 
 config.ENEMY2_BULLET_VELOCITY = 200
 config.ENEMY2_BULLET_FIRE_RATE = 2000
@@ -435,7 +439,7 @@ function pickFireRateUpgrade(player, fireRateUpgrade) {
 function pickInvencibility(player, invencibilityDrop) {
     invencibilityDrop.kill()
     player.invencible = 1
-    gameEvents.invencibilityTimer = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player)
+    /* gameEvents.invencibilityTimer = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player) */
 }
 
 function removeInvencibility(player) {
