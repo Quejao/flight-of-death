@@ -380,7 +380,9 @@ function player2HitBoss(boss, bullet) {
 
 function enemyBulletHitPlayer(player, damager) {
     if (player.alive) {
-        player.damage(1)
+        if (player.invencible != 1) {
+            player.damage(1)
+        }
         damager.kill()
         updateHud()
     }
@@ -388,7 +390,9 @@ function enemyBulletHitPlayer(player, damager) {
 
 function enemyHitPlayer(player, damager) {
     if (player.alive) {
-        player.damage(level)
+        if (player.invencible != 1) {
+            player.damage(level)
+        }
         damager.kill()
         updateHud()
     }
@@ -396,14 +400,18 @@ function enemyHitPlayer(player, damager) {
 
 function bossHitPlayer(player, boss) {
     if (player.alive) {
-        player.damage(2 * level)
+        if (player.invencible != 1) {
+            player.damage(2 * level)
+        }
         updateHud()
     }
 }
 
 function bossBulletHitPlayer(player, bossBullet) {
     if (player.alive) {
-        player.damage(2)
+        if (player.invencible != 1) {
+            player.damage(2)
+        }
         bossBullet.kill()
         updateHud()
     }
@@ -418,20 +426,19 @@ function pickHealthPack(player, healthPack) {
 function pickFireRateUpgrade(player, fireRateUpgrade) {
     if (player.fireRate > 100) {
         player.fireRate -= 50
-    } else{
+    } else {
         player.score += 10
     }
     fireRateUpgrade.kill()
 }
 
-function pickInvencibility(player, invencibilityDrop){
+function pickInvencibility(player, invencibilityDrop) {
     invencibilityDrop.kill()
     player.invencible = 1
-    gameEvents.invencibility = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player)
-
+    gameEvents.invencibilityTimer = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player)
 }
 
-function removeInvencibility(player){
+function removeInvencibility(player) {
     player.invencible = 0
 }
 
@@ -462,6 +469,7 @@ function update() {
 
     game.physics.arcade.overlap(player1, itens1, pickHealthPack)
     game.physics.arcade.overlap(player1, itens2, pickFireRateUpgrade)
+    game.physics.arcade.overlap(player1, itens3, pickInvencibility)
 
 
 
@@ -480,6 +488,7 @@ function update() {
 
     game.physics.arcade.overlap(player2, itens1, pickHealthPack)
     game.physics.arcade.overlap(player2, itens2, pickFireRateUpgrade)
+    game.physics.arcade.overlap(player2, itens3, pickInvencibility)
 
 
 
