@@ -16,6 +16,8 @@ var gameEvents = {}
 var itens1 = {}
 var itens2 = {}
 var itens3 = {}
+var backgroundMusic
+var gameOverMusic
 
 
 //Configurações do jogo
@@ -90,6 +92,9 @@ function preload() {
     game.load.image('item1', 'assets/health.png')
     game.load.image('item2', 'assets/fireRate.png')
     game.load.image('item3', 'assets/invencibility.png')
+
+    game.load.audio(`backgroundMusic`, `assets/EpicEnd.ogg`)
+    game.load.audio(`gameover`, `assets/GameOver.ogg`)
 }
 
 function createBullets(img) {
@@ -159,6 +164,14 @@ function createGameOverText(x, y, text) {
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE)
     game.world.setBounds(0, 0, config.RES_X, config.RES_Y)
+
+    backgroundMusic = game.add.audio(`backgroundMusic`)
+    backgroundMusic.volume = 0.1
+    backgroundMusic.loop = true
+    backgroundMusic.play()
+
+    gameOverMusic = game.add.audio(`gameover`)
+    gameOverMusic.volume = 0.1
 
     space = game.add.sprite(0, 0, 'space')
     space2 = game.add.sprite(0, config.RES_Y, 'space')
@@ -606,6 +619,8 @@ function updateHud() {
     hud.score2.text = `SCORE: ${player2.score}`
     if (!player1.alive && !player2.alive) {
         hud.gameOver.visible = true
+        backgroundMusic.stop()
+        gameOverMusic.play()
     }
     hud.level.text = `LEVEL: ${level}`
 }
