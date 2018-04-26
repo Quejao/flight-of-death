@@ -14,6 +14,6 @@ class Enemy1 extends Phaser.Sprite {
     }
 
     update() {
-        game.physics.arcade.accelerationFromRotation(this.rotation, 2000, this.body.acceleration) 
+        game.physics.arcade.accelerationFromRotation(this.rotation, 2000, this.body.acceleration)
     }
 }

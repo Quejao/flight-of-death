@@ -12,27 +12,27 @@ class Player extends Phaser.Sprite {
         this.nextFire = 0
         this.angle = -90
         this.score = 0
-        this.body.collideWorldBounds = true 
+        this.body.collideWorldBounds = true
         this.invencible = 0
 
         this.fireRate = config.BULLET_FIRE_RATE
-        
+
         this.cursors = {
             left: game.input.keyboard.addKey(keys.left),
             right: game.input.keyboard.addKey(keys.right),
             up: game.input.keyboard.addKey(keys.up),
-            down: game.input.keyboard.addKey(keys.down),        
+            down: game.input.keyboard.addKey(keys.down),
             fire: game.input.keyboard.addKey(keys.fire)
         }
 
         this.bullets = bullets
 
-        this.tweenInvencible = game.add.tween(this).to( { alpha: 20 }, 2000).to( { alpha: 100 }, 2000).loop(true)
+        this.tweenInvencible = game.add.tween(this).to({ alpha: 20 }, 2000).to({ alpha: 100 }, 2000).loop(true)
     }
 
     moveAndStop() {
 
-        
+
         this.body.velocity.setTo(0, 0)
 
         if (this.cursors.left.isDown) {
@@ -59,8 +59,8 @@ class Player extends Phaser.Sprite {
 
     fireBullet() {
         if (!this.alive)
-            return 
-    
+            return
+
         if (this.cursors.fire.isDown) {
             if (this.game.time.time > this.nextFire) {
                 var bullet = this.bullets.getFirstExists(false)
@@ -74,7 +74,7 @@ class Player extends Phaser.Sprite {
                     game.physics.arcade.velocityFromRotation(
                         bullet.rotation, config.BULLET_VELOCITY, bullet.body.velocity
                     )
-    
+
                     this.nextFire = this.game.time.time + this.fireRate
                 }
             }
@@ -84,7 +84,7 @@ class Player extends Phaser.Sprite {
     update() {
         this.moveAndStop()
         this.fireBullet()
-        if(this.invencible == 1){
+        if (this.invencible == 1) {
             this.tweenInvencible.start()
         }
     }

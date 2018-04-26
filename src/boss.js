@@ -1,7 +1,7 @@
 class Boss extends Phaser.Sprite {
     constructor(game, x, y, img, bulletKey) {
         super(game, x, y, img)
-        this.scale.setTo(config.SCALE * 5, config.SCALE * 5)
+        this.scale.setTo(1, 1)
         this.y = -200
         this.SPEED_X = config.BOSS_VELOCITY
         this.SPEED_Y = config.BOSS_VELOCITY
@@ -9,8 +9,7 @@ class Boss extends Phaser.Sprite {
         game.physics.arcade.enable(this)
         this.body.maxVelocity.set(this.SPEED_X)
         this.health = config.BOSS_HEALTH
-
-        this.body.isCircle = true
+        this.body.setSize(510, 200, -150, 150)
 
         this.angle = 90
 
@@ -22,16 +21,16 @@ class Boss extends Phaser.Sprite {
         this.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
         this.weapon.bulletAngleVariance = 50
         this.weapon.trackSprite(this, 0, 120)
-        
+
 
         var left = this.width
         var right = game.width - this.width
         var hDelay = game.width / (200 / 1000)
 
         this.movementTween = game.add.tween(this)
-            .to({ x: right }, hDelay/2)
+            .to({ x: right }, hDelay / 2)
             .to({ x: left }, hDelay)
-            .to({ x: game.width/2 }, hDelay)
+            .to({ x: game.width / 2 }, hDelay)
             .loop(true)
 
     }
@@ -41,7 +40,7 @@ class Boss extends Phaser.Sprite {
             this.weapon.fire()
         }
 
-        if(this.y > 0){
+        if (this.y > 0) {
             this.movementTween.start()
         }
     }

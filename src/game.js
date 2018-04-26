@@ -44,7 +44,7 @@ config.BOSS_BULLET_VELOCITY = 400
 config.BOSS_BULLET_FIRE_RATE = 360
 
 
-config.ENEMY_QNT = 1
+config.ENEMY_QNT = 5
 
 config.ENEMY1_HEALTH = 0
 config.ENEMY1_VELOCITY = 100
@@ -76,28 +76,29 @@ function preload() {
     game.load.image('space', 'assets/space.png')
     game.load.image('plane1', 'assets/ship.png')
 
-    game.load.image('shot', 'assets/shot.png')
-    game.load.image('shot2', 'assets/shot.png')
+    game.load.image('shot1', 'assets/shot1.png')
+    game.load.image('shot2', 'assets/shot2.png')
+    game.load.image('shot3', 'assets/shot3.png')
     game.load.image('bossShot', 'assets/bossShot.png')
     game.load.image('nuke', 'assets/nuke.png')
 
     game.load.image('enemy1', 'assets/asteroid.png')
     game.load.image('enemy2', 'assets/airplane2.png')
     game.load.image('enemy3', 'assets/airplane3.png')
+    game.load.image('boss', 'assets/boss.png')
 
     game.load.image('item1', 'assets/health.png')
     game.load.image('item2', 'assets/fireRate.png')
     game.load.image('item3', 'assets/invencibility.png')
 }
 
-function createBullets(tint) {
+function createBullets(img) {
     var bullets = game.add.group()
     bullets.enableBody = true
     bullets.physicsBodyType = Phaser.Physics.ARCADE
-    bullets.createMultiple(config.BULLET_QNT, 'shot')
+    bullets.createMultiple(config.BULLET_QNT, img)
     bullets.setAll('anchor.x', 0.5)
     bullets.setAll('anchor.y', 0.5)
-    bullets.setAll('tint', tint)
     return bullets
 }
 
@@ -166,7 +167,7 @@ function create() {
     space.anchor.setTo(0.5, 0.5)
     space.scale.setTo(2, 2)
 
-    player1 = new Player(game, (game.width / 2) - 100, game.height - 100, 'plane1', 0x008000, createBullets(0x008000),
+    player1 = new Player(game, (game.width / 2) - 100, game.height - 100, 'plane1', 0x008000, createBullets(`shot1`),
         {
             left: Phaser.Keyboard.A,
             right: Phaser.Keyboard.D,
@@ -176,7 +177,7 @@ function create() {
         }
     )
 
-    player2 = new Player(game, (game.width / 2) + 100, game.height - 100, 'plane1', 0xff0000, createBullets(0xff0000),
+    player2 = new Player(game, (game.width / 2) + 100, game.height - 100, 'plane1', 0xff0000, createBullets(`shot2`),
         {
             left: Phaser.Keyboard.LEFT,
             right: Phaser.Keyboard.RIGHT,
@@ -224,7 +225,7 @@ function create() {
 
     itens3 = createItems('item3')
 
-    boss = new Boss(game, game.width / 2, -50, 'enemy2', 'bossShot')
+    boss = new Boss(game, game.width / 2, -50, 'boss', 'bossShot')
     game.add.existing(boss)
 
     hud = {
@@ -367,8 +368,8 @@ function player1HitBoss(boss, bullet) {
             config.ENEMY2_SPAWN_RATE *= 8 / 10
             if (level >= 2) {
                 gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
-            } 
-            if (level >= 3){
+            }
+            if (level >= 3) {
                 gameEvents.enemy3 = game.time.events.loop(config.ENEMY3_SPAWN_RATE, createEnemy3, this)
             }
             gameEvents.enemy2 = game.time.events.loop(config.ENEMY2_SPAWN_RATE, createEnemy2, this)
@@ -451,8 +452,8 @@ function player2HitBoss(boss, bullet) {
             config.ENEMY3_SPAWN_RATE *= 8 / 10
             if (level >= 2) {
                 gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
-            } 
-            if (level >= 3){
+            }
+            if (level >= 3) {
                 gameEvents.enemy3 = game.time.events.loop(config.ENEMY3_SPAWN_RATE, createEnemy3, this)
             }
             gameEvents.enemy2 = game.time.events.loop(config.ENEMY2_SPAWN_RATE, createEnemy2, this)
@@ -566,7 +567,7 @@ function update() {
 
     game.physics.arcade.overlap(enemies1, player2.bullets, player2HitEnemy1)
     game.physics.arcade.overlap(enemies2, player2.bullets, player2HitEnemy2)
-    game.physics.arcade.overlap(enemies3, player2.bullets, player1HitEnemy3)    
+    game.physics.arcade.overlap(enemies3, player2.bullets, player1HitEnemy3)
     game.physics.arcade.overlap(boss, player2.bullets, player2HitBoss)
 
     game.physics.arcade.collide(player2, enemies1, enemyHitPlayer)
@@ -636,7 +637,8 @@ function killEnemyOutOfScreen(sprite) {
 function render() {
     /* game.debug.body(player1)
     game.debug.body(player2) */
-    /* enemies2.forEach(function(obj){
+    /* enemies3.forEach(function (obj) {
         game.debug.body(obj)
     }) */
+    /* game.debug.body(boss) */
 }
