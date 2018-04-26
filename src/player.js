@@ -27,7 +27,7 @@ class Player extends Phaser.Sprite {
 
         this.bullets = bullets
 
-        this.tweenInvencible = game.add.tween(this).to( { alpha: 20 }, 2000, Phaser.Easing.Linear.None, false, 1000, -1, true)
+        this.tweenInvencible = game.add.tween(this).to( { alpha: 20 }, 2000).to( { alpha: 100 }, 2000).loop(true)
     }
 
     moveAndStop() {

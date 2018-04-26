@@ -15,16 +15,20 @@ class Enemy2 extends Phaser.Sprite {
         this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
         this.weapon.fireAngle = 90
         this.weapon.bulletSpeed = config.ENEMY2_BULLET_VELOCITY
+        this.weapon.bullets.health = 2
         this.weapon.fireRate = config.ENEMY2_BULLET_FIRE_RATE
         this.weapon.trackSprite(this, 0, 14)
+        
+        this.nextFire = game.time.now + config.ENEMY2_BULLET_FIRE_RATE 
 
     }
 
     update() {
         game.physics.arcade.accelerationFromRotation(this.rotation, 2000, this.body.acceleration) 
         
-        if (this.alive) {
+        if (this.alive && this.position.x > 0 && game.time.now > this.nextFire) {
             this.weapon.fire()
+            this.nextFire = game.time.now + config.ENEMY2_BULLET_FIRE_RATE
         }
 
     }

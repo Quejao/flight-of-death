@@ -15,7 +15,7 @@ class Boss extends Phaser.Sprite {
         this.angle = 90
 
 
-        this.weapon = game.add.weapon(10, bulletKey)
+        this.weapon = game.add.weapon(30, bulletKey)
         this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
         this.weapon.fireAngle = 90
         this.weapon.bulletSpeed = config.BOSS_BULLET_VELOCITY

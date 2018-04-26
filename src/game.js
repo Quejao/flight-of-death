@@ -8,6 +8,7 @@ var asteroid
 var boss
 var enemies1
 var enemies2
+var enemies3
 var enemiesToBoss = 0
 var hud
 var level = 1
@@ -52,13 +53,15 @@ config.ENEMY1_SPAWN_RATE = Phaser.Timer.SECOND * 6
 config.ENEMY2_HEALTH = 1
 config.ENEMY2_VELOCITY = 100
 config.ENEMY2_SPAWN_RATE = Phaser.Timer.SECOND * 4
+config.ENEMY2_BULLET_VELOCITY = 200
+config.ENEMY2_BULLET_FIRE_RATE = 3000
 
 config.ENEMY3_HEALTH = 1
 config.ENEMY3_VELOCITY = 100
-config.ENEMY3_SPAWN_RATE = Phaser.Timer.SECOND * 4
+config.ENEMY3_SPAWN_RATE = Phaser.Timer.SECOND * 6
+config.ENEMY3_BULLET_VELOCITY = 300
+config.ENEMY3_BULLET_FIRE_RATE = 3000
 
-config.ENEMY2_BULLET_VELOCITY = 200
-config.ENEMY2_BULLET_FIRE_RATE = 2000
 
 var game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
     'game-container',
@@ -74,11 +77,13 @@ function preload() {
     game.load.image('plane1', 'assets/ship.png')
 
     game.load.image('shot', 'assets/shot.png')
+    game.load.image('shot2', 'assets/shot.png')
     game.load.image('bossShot', 'assets/bossShot.png')
     game.load.image('nuke', 'assets/nuke.png')
 
     game.load.image('enemy1', 'assets/asteroid.png')
     game.load.image('enemy2', 'assets/airplane2.png')
+    game.load.image('enemy3', 'assets/airplane3.png')
 
     game.load.image('item1', 'assets/health.png')
     game.load.image('item2', 'assets/fireRate.png')
@@ -204,6 +209,15 @@ function create() {
 
     gameEvents.enemy2 = game.time.events.loop(config.ENEMY2_SPAWN_RATE, createEnemy2, this)
 
+    //Criação das naves inimigas tipo 2
+    enemies3 = game.add.group()
+    enemies3.enableBody = true
+    enemies3.physicsBodyType = Phaser.Physics.ARCADE
+    enemies3.classType = Enemy3
+    enemies3.createMultiple(config.ENEMY_QNT, 'enemy3')
+    enemies3.setAll('anchor.x', 0.5)
+    enemies3.setAll('anchor.y', 0.5)
+
     itens1 = createItems('item1')
 
     itens2 = createItems('item2')
@@ -247,6 +261,15 @@ function createEnemy2() {
     }
 }
 
+function createEnemy3() {
+    var enemy = enemies3.getFirstExists(false)
+    if (enemy) {
+        enemy.reset(game.rnd.integerInRange(48, game.width - 48), -10)
+        enemy.health = config.ENEMY3_HEALTH
+        enemy.angle = 90
+    }
+}
+
 function spawnItem(x, y) {
     var aux = game.rnd.integerInRange(1, 3)
 
@@ -271,27 +294,48 @@ function spawnItem(x, y) {
     }
 }
 
-function player1HitEnemy1(enemy1, bullet) {
-    if (enemy1.alive && enemy1.y > 0) {
-        enemy1.damage(1)
+function player1HitEnemy1(enemy, bullet) {
+    if (enemy.alive && enemy.y > 0) {
+        enemy.damage(1)
         bullet.kill()
-        if (!enemy1.alive) {
+        if (!enemy.alive) {
             player1.score += 5 * level
-            spawnItem(enemy1.x, enemy1.y)
+            spawnItem(enemy.x, enemy.y)
             updateHud()
         }
     }
 }
 
-function player1HitEnemy2(enemy1, bullet) {
-    if (enemy1.alive && enemy1.y > 0) {
-        enemy1.damage(1)
+function player1HitEnemy2(enemy, bullet) {
+    if (enemy.alive && enemy.y > 0) {
+        enemy.damage(1)
         bullet.kill()
-        if (!enemy1.alive) {
+        if (!enemy.alive) {
             player1.score += 10 * level
             enemiesToBoss += 1
             if (enemiesToBoss == config.ENEMY_QNT) {
                 game.time.events.remove(gameEvents.enemy2)
+                game.time.events.remove(gameEvents.enemy3)
+                boss.reset(game.width / 2, -200)
+                boss.health = config.BOSS_HEALTH
+                boss.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
+                config.BOSS_SPAWN = 1
+            }
+            updateHud()
+        }
+    }
+}
+
+function player1HitEnemy3(enemy, bullet) {
+    if (enemy.alive && enemy.y > 0) {
+        enemy.damage(1)
+        bullet.kill()
+        if (!enemy.alive) {
+            player1.score += 10 * level
+            enemiesToBoss += 1
+            if (enemiesToBoss == config.ENEMY_QNT) {
+                game.time.events.remove(gameEvents.enemy2)
+                game.time.events.remove(gameEvents.enemy3)
                 boss.reset(game.width / 2, -200)
                 boss.health = config.BOSS_HEALTH
                 boss.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
@@ -309,16 +353,23 @@ function player1HitBoss(boss, bullet) {
         if (!boss.alive) {
             player1.score += 100 * level
             enemiesToBoss = 0
-            config.ENEMY_QNT += 5
+            config.ENEMY_QNT += 0
             config.ENEMY1_HEALTH += 1
 
             config.ENEMY2_HEALTH += 1
             config.ENEMY2_VELOCITY += 60
+
+            config.ENEMY3_HEALTH += 1
+            config.ENEMY3_VELOCITY += 60
+
             config.BOSS_SPAWN = 0
             level++
             config.ENEMY2_SPAWN_RATE *= 8 / 10
-            if (level == 2) {
+            if (level >= 2) {
                 gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
+            } 
+            if (level >= 3){
+                gameEvents.enemy3 = game.time.events.loop(config.ENEMY3_SPAWN_RATE, createEnemy3, this)
             }
             gameEvents.enemy2 = game.time.events.loop(config.ENEMY2_SPAWN_RATE, createEnemy2, this)
             updateHud()
@@ -347,6 +398,7 @@ function player2HitEnemy2(enemy2, bullet) {
             enemiesToBoss += 1
             if (enemiesToBoss == config.ENEMY_QNT) {
                 game.time.events.remove(gameEvents.enemy2)
+                game.time.events.remove(gameEvents.enemy3)
                 boss.reset(game.width / 2, -200)
                 boss.health = config.BOSS_HEALTH
                 config.BOSS_SPAWN = 1
@@ -356,6 +408,27 @@ function player2HitEnemy2(enemy2, bullet) {
     }
 }
 
+function player2HitEnemy3(enemy, bullet) {
+    if (enemy.alive && enemy.y > 0) {
+        enemy.damage(1)
+        bullet.kill()
+        if (!enemy.alive) {
+            player2.score += 10 * level
+            enemiesToBoss += 1
+            if (enemiesToBoss == config.ENEMY_QNT) {
+                game.time.events.remove(gameEvents.enemy2)
+                game.time.events.remove(gameEvents.enemy3)
+                boss.reset(game.width / 2, -200)
+                boss.health = config.BOSS_HEALTH
+                boss.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
+                config.BOSS_SPAWN = 1
+            }
+            updateHud()
+        }
+    }
+}
+
+
 function player2HitBoss(boss, bullet) {
     if (boss.alive) {
         boss.damage(1)
@@ -363,18 +436,24 @@ function player2HitBoss(boss, bullet) {
         if (!boss.alive) {
             player2.score += 100 * level
             enemiesToBoss = 0
-            config.ENEMY_QNT += 5
+            config.ENEMY_QNT += 0
             config.ENEMY1_HEALTH += 1
-            config.ENEMY1_VELOCITY += 60
 
-            config.BOSS_HEALTH += 5
+            config.ENEMY2_HEALTH += 1
+            config.ENEMY2_VELOCITY += 60
 
-            config.BOSS_BULLET_FIRE_RATE += 20
+            config.ENEMY3_HEALTH += 1
+            config.ENEMY3_VELOCITY += 60
+
             config.BOSS_SPAWN = 0
             level++
-            config.ENEMY1_SPAWN_RATE *= 8 / 10
-            if (level == 2) {
+            config.ENEMY2_SPAWN_RATE *= 8 / 10
+            config.ENEMY3_SPAWN_RATE *= 8 / 10
+            if (level >= 2) {
                 gameEvents.enemy1 = game.time.events.loop(config.ENEMY1_SPAWN_RATE, createEnemy, this)
+            } 
+            if (level >= 3){
+                gameEvents.enemy3 = game.time.events.loop(config.ENEMY3_SPAWN_RATE, createEnemy3, this)
             }
             gameEvents.enemy2 = game.time.events.loop(config.ENEMY2_SPAWN_RATE, createEnemy2, this)
             updateHud()
@@ -439,7 +518,8 @@ function pickFireRateUpgrade(player, fireRateUpgrade) {
 function pickInvencibility(player, invencibilityDrop) {
     invencibilityDrop.kill()
     player.invencible = 1
-    /* gameEvents.invencibilityTimer = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player) */
+    player.tweenInvencible.start()
+    gameEvents.invencibilityTimer = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player)
 }
 
 function removeInvencibility(player) {
@@ -461,12 +541,18 @@ function update() {
 
     game.physics.arcade.overlap(enemies1, player1.bullets, player1HitEnemy1)
     game.physics.arcade.overlap(enemies2, player1.bullets, player1HitEnemy2)
+    game.physics.arcade.overlap(enemies3, player1.bullets, player1HitEnemy3)
     game.physics.arcade.overlap(boss, player1.bullets, player1HitBoss)
 
     game.physics.arcade.collide(player1, enemies1, enemyHitPlayer)
     game.physics.arcade.collide(player1, enemies2, enemyHitPlayer)
-    enemies2.forEach(function (obj) {
-        game.physics.arcade.collide(player1, obj.weapon.bullets, enemyBulletHitPlayer)
+    game.physics.arcade.collide(player1, enemies3, enemyHitPlayer)
+
+    enemies2.forEach(function (enemy2) {
+        game.physics.arcade.collide(player1, enemy2.weapon.bullets, enemyBulletHitPlayer)
+    })
+    enemies3.forEach(function (enemy3) {
+        game.physics.arcade.collide(player1, enemy3.weapon.bullets, enemyBulletHitPlayer)
     })
     game.physics.arcade.collide(player1, boss, bossHitPlayer)
     game.physics.arcade.collide(player1, boss.weapon.bullets, bossBulletHitPlayer)
@@ -480,12 +566,18 @@ function update() {
 
     game.physics.arcade.overlap(enemies1, player2.bullets, player2HitEnemy1)
     game.physics.arcade.overlap(enemies2, player2.bullets, player2HitEnemy2)
+    game.physics.arcade.overlap(enemies3, player2.bullets, player1HitEnemy3)    
     game.physics.arcade.overlap(boss, player2.bullets, player2HitBoss)
 
     game.physics.arcade.collide(player2, enemies1, enemyHitPlayer)
     game.physics.arcade.collide(player2, enemies2, enemyHitPlayer)
-    enemies2.forEach(function (obj) {
-        game.physics.arcade.collide(player2, obj.weapon.bullets, enemyBulletHitPlayer)
+    game.physics.arcade.collide(player2, enemies3, enemyHitPlayer)
+
+    enemies2.forEach(function (enemy2) {
+        game.physics.arcade.collide(player2, enemy2.weapon.bullets, enemyBulletHitPlayer)
+    })
+    enemies3.forEach(function (enemy3) {
+        game.physics.arcade.collide(player2, enemy3.weapon.bullets, enemyBulletHitPlayer)
     })
     game.physics.arcade.collide(player2, boss, bossHitPlayer)
     game.physics.arcade.collide(player2, boss.weapon.bullets, bossBulletHitPlayer)
@@ -500,6 +592,7 @@ function update() {
     updateBullets(player2.bullets)
     updateEnemy(enemies1)
     updateEnemy(enemies2)
+    updateEnemy(enemies3)
 }
 
 
