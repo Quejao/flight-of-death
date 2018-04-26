@@ -604,6 +604,9 @@ function update() {
 
     updateBullets(player1.bullets)
     updateBullets(player2.bullets)
+    updateBullets(itens1)
+    updateBullets(itens2)
+    updateBullets(itens3)
     updateEnemy(enemies1)
     updateEnemy(enemies2)
     updateEnemy(enemies3)
