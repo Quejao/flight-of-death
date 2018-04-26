@@ -43,7 +43,7 @@ config.BOSS_HEALTH = 5
 config.BOSS_VELOCITY = 100
 config.BOSS_SPAWN = 0
 config.BOSS_BULLET_VELOCITY = 400
-config.BOSS_BULLET_FIRE_RATE = 360
+config.BOSS_BULLET_FIRE_RATE = 500
 
 
 config.ENEMY_QNT = 5
@@ -377,6 +377,9 @@ function player1HitBoss(boss, bullet) {
             config.ENEMY3_VELOCITY += 60
 
             config.BOSS_SPAWN = 0
+            if (config.BOSS_BULLET_FIRE_RATE > 100) {
+                config.BOSS_BULLET_FIRE_RATE -= 50
+            }
             level++
             config.ENEMY2_SPAWN_RATE *= 8 / 10
             if (level >= 2) {
@@ -460,6 +463,9 @@ function player2HitBoss(boss, bullet) {
             config.ENEMY3_VELOCITY += 60
 
             config.BOSS_SPAWN = 0
+            if (config.BOSS_BULLET_FIRE_RATE > 100) {
+                config.BOSS_BULLET_FIRE_RATE -= 50
+            }
             level++
             config.ENEMY2_SPAWN_RATE *= 8 / 10
             config.ENEMY3_SPAWN_RATE *= 8 / 10

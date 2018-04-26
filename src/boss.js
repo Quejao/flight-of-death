@@ -19,7 +19,7 @@ class Boss extends Phaser.Sprite {
         this.weapon.fireAngle = 90
         this.weapon.bulletSpeed = config.BOSS_BULLET_VELOCITY
         this.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
-        this.weapon.bulletAngleVariance = 50
+        this.weapon.bulletAngleVariance = 60
         this.weapon.trackSprite(this, 0, 120)
 
 
