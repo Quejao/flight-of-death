@@ -547,12 +547,13 @@ function pickFireRateUpgrade(player, fireRateUpgrade) {
 function pickInvencibility(player, invencibilityDrop) {
     invencibilityDrop.kill()
     player.invencible = 1
-    player.tweenInvencible.start()
+    player.tint = 0xffd700
     gameEvents.invencibilityTimer = game.time.events.add(Phaser.Timer.SECOND * config.INVECIBILITY_TIME, removeInvencibility, this, player)
 }
 
 function removeInvencibility(player) {
     player.invencible = 0
+    player.tint = player.playerColor
 }
 
 function resetConfigs() {

@@ -15,6 +15,8 @@ class Player extends Phaser.Sprite {
         this.body.collideWorldBounds = true
         this.invencible = 0
 
+        this.playerColor = tint
+
         this.fireRate = config.BULLET_FIRE_RATE
 
         this.sound = game.add.audio(sound)
