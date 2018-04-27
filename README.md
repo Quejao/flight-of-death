@@ -18,6 +18,7 @@ Controles Player 2:<br>
   &ensp;L: atira<br>
 
 Destrua os asteroides para dropar itens<br>
+
   &ensp;F: aumenta o fire rate da arma<br>
   &ensp;I: invencibilidade por 5 segundos<br>
   &ensp;H: +1 de vida<br>
