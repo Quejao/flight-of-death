@@ -610,6 +610,7 @@ function update() {
             game.destroy()
             resetConfigs()
             enemiesToBoss = 0
+            level = 1
             game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
                 'game-container',
                 {
