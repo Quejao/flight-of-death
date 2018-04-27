@@ -18,6 +18,8 @@ var itens2 = {}
 var itens3 = {}
 var backgroundMusic
 var gameOverMusic
+var gameOverFlag = 0
+var restartButton
 
 
 //Configurações do jogo
@@ -173,6 +175,8 @@ function create() {
     backgroundMusic.loop = true
     backgroundMusic.play()
 
+    restartButton = game.input.keyboard.addKey(Phaser.Keyboard.R)
+
     gameOverMusic = game.add.audio(`gameover`)
     gameOverMusic.volume = 0.1
 
@@ -243,7 +247,7 @@ function create() {
 
     itens3 = createItems('item3')
 
-    boss = new Boss(game, game.width / 2, -50, 'boss', 'bossShot','bossShotSound')
+    boss = new Boss(game, game.width / 2, -50, 'boss', 'bossShot', 'bossShotSound')
     game.add.existing(boss)
 
     hud = {
@@ -251,7 +255,7 @@ function create() {
         text2: createHealthText(game.width * 8 / 9, 50, 'PLAYER 2: 5'),
         score1: createScoreText(game.width * 1 / 9, 80, 'SCORE: 0'),
         score2: createScoreText(game.width * 8 / 9, 80, 'SCORE: 0'),
-        gameOver: createGameOverText(game.width / 2, 600, 'GAME OVER'),
+        gameOver: createGameOverText(game.width / 2, 600, '        GAME OVER\nAperte R para reiniciar'),
         level: createLevelText(game.width / 2, 50, 'LEVEL: 1'),
     }
     updateHud()
@@ -551,6 +555,43 @@ function removeInvencibility(player) {
     player.invencible = 0
 }
 
+function resetConfigs() {
+    config.PLAYER_VELOCITY = 500
+    config.PLAYER_HEALTH = 10
+    config.PLAYER_SCALE = 3
+
+    config.BULLET_QNT = 100
+    config.BULLET_LIFE_SPAN = 1000
+    config.BULLET_VELOCITY = 1500
+    config.BULLET_FIRE_RATE = 1000
+
+    //Configurações dos inimigos
+    config.BOSS_HEALTH = 5
+    config.BOSS_VELOCITY = 100
+    config.BOSS_SPAWN = 0
+    config.BOSS_BULLET_VELOCITY = 400
+    config.BOSS_BULLET_FIRE_RATE = 500
+
+
+    config.ENEMY_QNT = 5
+
+    config.ENEMY1_HEALTH = 0
+    config.ENEMY1_VELOCITY = 100
+    config.ENEMY1_SPAWN_RATE = Phaser.Timer.SECOND * 6
+
+    config.ENEMY2_HEALTH = 1
+    config.ENEMY2_VELOCITY = 100
+    config.ENEMY2_SPAWN_RATE = Phaser.Timer.SECOND * 4
+    config.ENEMY2_BULLET_VELOCITY = 200
+    config.ENEMY2_BULLET_FIRE_RATE = 3000
+
+    config.ENEMY3_HEALTH = 1
+    config.ENEMY3_VELOCITY = 100
+    config.ENEMY3_SPAWN_RATE = Phaser.Timer.SECOND * 6
+    config.ENEMY3_BULLET_VELOCITY = 300
+    config.ENEMY3_BULLET_FIRE_RATE = 3000
+}
+
 function update() {
     space.y += 2
     space2.y += 2
@@ -563,6 +604,22 @@ function update() {
         boss.y += 10
     }
 
+    if (gameOverFlag == 1) {
+        if (restartButton.isDown) {
+            game.destroy()
+            resetConfigs()
+            enemiesToBoss = 0
+            game = new Phaser.Game(config.RES_X, config.RES_Y, Phaser.CANVAS,
+                'game-container',
+                {
+                    preload: preload,
+                    create: create,
+                    update: update,
+                    render: render
+                })
+                gameOverFlag = 0
+        }
+    }
 
     game.physics.arcade.overlap(enemies1, player1.bullets, player1HitEnemy1)
     game.physics.arcade.overlap(enemies2, player1.bullets, player1HitEnemy2)
@@ -635,6 +692,7 @@ function updateHud() {
         hud.gameOver.visible = true
         backgroundMusic.stop()
         gameOverMusic.play()
+        gameOverFlag = 1
     }
     hud.level.text = `LEVEL: ${level}`
 }
