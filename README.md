@@ -1,7 +1,7 @@
 # flight-of-death
 Jogo feito para a disciplina de Desenvolvimento de Jogos
 
-<link>https://quejao.github.io/flight-of-death/game.html</link>
+<link>https://quejao.github.io/flight-of-death/game.html<link>
 
 Controles Player 1:<br>
   &ensp;W: move para cima<br>
