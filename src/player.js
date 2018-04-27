@@ -1,6 +1,6 @@
 
 class Player extends Phaser.Sprite {
-    constructor(game, x, y, img, tint, bullets, keys) {
+    constructor(game, x, y, img, tint, bullets, keys, sound) {
         super(game, x, y, img)
         this.scale.setTo(config.PLAYER_SCALE, config.PLAYER_SCALE)
         this.tint = tint
@@ -16,6 +16,9 @@ class Player extends Phaser.Sprite {
         this.invencible = 0
 
         this.fireRate = config.BULLET_FIRE_RATE
+
+        this.sound = game.add.audio(sound)
+        this.sound.volume = 0.1
 
         this.cursors = {
             left: game.input.keyboard.addKey(keys.left),
@@ -74,6 +77,7 @@ class Player extends Phaser.Sprite {
                     game.physics.arcade.velocityFromRotation(
                         bullet.rotation, config.BULLET_VELOCITY, bullet.body.velocity
                     )
+                    this.sound.play()
 
                     this.nextFire = this.game.time.time + this.fireRate
                 }

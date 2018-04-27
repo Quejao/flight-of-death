@@ -19,23 +19,29 @@ class Enemy3 extends Phaser.Sprite {
         this.weapon.trackSprite(this, 0, 0)
         this.nextFire = game.time.now + config.ENEMY3_BULLET_FIRE_RATE
 
+        this.sound = game.add.audio('enemy3ShotSound')
+        this.sound.volume = 0.1
+
     }
 
     update() {
         game.physics.arcade.accelerationFromRotation(this.rotation, 2000, this.body.acceleration)
-        if (game.time.now > this.nextFire && this.position.x > 0 && this.alive) {
+        if (game.time.now > this.nextFire && this.position.y > 0 && this.alive) {
             var center = new Phaser.Point(this.position.x, this.position.y + 20)
             this.weapon.fireAngle = 90
             this.weapon.fire(center)
+            this.sound.play()
 
             var left = new Phaser.Point(this.position.x - 16, this.position.y + 20)
             this.weapon.fireAngle = 95 + 15
             this.weapon.fire(left)
+            this.sound.play()
 
             // Right bullets
             var right = new Phaser.Point(this.position.x + 16, this.position.y + 20)
             this.weapon.fireAngle = 85 - 15
             this.weapon.fire(right)
+            this.sound.play()
 
             this.nextFire = game.time.now + config.ENEMY3_BULLET_FIRE_RATE
         }

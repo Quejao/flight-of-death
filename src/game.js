@@ -95,6 +95,9 @@ function preload() {
 
     game.load.audio(`backgroundMusic`, `assets/EpicEnd.ogg`)
     game.load.audio(`gameover`, `assets/GameOver.ogg`)
+    game.load.audio(`bossShotSound`, `assets/bossShot.mp3`)
+    game.load.audio(`playerShotSound`, `assets/playerShot.mp3`)
+    game.load.audio(`enemy3ShotSound`, `assets/enemy3Shot.mp3`)
 }
 
 function createBullets(img) {
@@ -187,7 +190,8 @@ function create() {
             up: Phaser.Keyboard.W,
             down: Phaser.Keyboard.S,
             fire: Phaser.Keyboard.SPACEBAR
-        }
+        },
+        'playerShotSound'
     )
 
     player2 = new Player(game, (game.width / 2) + 100, game.height - 100, 'plane1', 0xff0000, createBullets(`shot2`),
@@ -197,7 +201,8 @@ function create() {
             up: Phaser.Keyboard.UP,
             down: Phaser.Keyboard.DOWN,
             fire: Phaser.Keyboard.L
-        }
+        },
+        'playerShotSound'
     )
 
     game.add.existing(player1)
@@ -238,7 +243,7 @@ function create() {
 
     itens3 = createItems('item3')
 
-    boss = new Boss(game, game.width / 2, -50, 'boss', 'bossShot')
+    boss = new Boss(game, game.width / 2, -50, 'boss', 'bossShot','bossShotSound')
     game.add.existing(boss)
 
     hud = {

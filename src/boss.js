@@ -1,5 +1,5 @@
 class Boss extends Phaser.Sprite {
-    constructor(game, x, y, img, bulletKey) {
+    constructor(game, x, y, img, bulletKey, sound) {
         super(game, x, y, img)
         this.scale.setTo(1, 1)
         this.y = -200
@@ -20,8 +20,11 @@ class Boss extends Phaser.Sprite {
         this.weapon.bulletSpeed = config.BOSS_BULLET_VELOCITY
         this.weapon.fireRate = config.BOSS_BULLET_FIRE_RATE
         this.weapon.bulletAngleVariance = 60
+        this.nextFire = game.time.now + config.BOSS_BULLET_FIRE_RATE
         this.weapon.trackSprite(this, 0, 120)
 
+        this.sound = game.add.audio(sound)
+        this.sound.volume = 0.1
 
         var left = this.width
         var right = game.width - this.width
@@ -36,8 +39,10 @@ class Boss extends Phaser.Sprite {
     }
 
     update() {
-        if (this.alive) {
+        if (this.alive && game.time.now > this.nextFire && this.position.y > 0) {
             this.weapon.fire()
+            this.nextFire = game.time.now + config.BOSS_BULLET_FIRE_RATE
+            this.sound.play()
         }
 
         if (this.y > 0) {
