@@ -16,3 +16,10 @@ Controles Player 2:<br>
   &ensp;Seta para baixo: move para baixo<br>
   &ensp;Seta para direita: move para a direita<br>
   &ensp;L: atira<br>
+
+Destrua os asteroides para dropar itens
+  &ensp;F: aumenta o fire rate da arma<br>
+  &ensp;I: invencibilidade por 5 segundos<br>
+  &ensp;H: +1 de vida<br>
+
+Diminua o zoom da página e use F11 se quiser jogar em tela cheia
